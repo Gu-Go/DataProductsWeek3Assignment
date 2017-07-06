@@ -1,0 +1,64 @@
+---
+title: "Week 3 Assignment"
+author: "Ella"
+date: "July 5, 2017"
+output: ioslides_presentation
+---
+
+## Air Quality Analysis 
+
+- Analyze New York Air Quality
+- Based on data in the airquality datasets
+- Include daily air quality measurements 
+- Cover Month from May to September 1973
+- Create plot with plotly
+
+```{r, echo=FALSE, results='asis', include=FALSE,message=FALSE}
+library(plotly)
+library(tidyr)
+library(dplyr)
+data("airquality")
+```
+
+## Plot Notes
+
+- Created with scatter type
+- Circle size refers to Wind size
+
+```{r, echo=FALSE, message=FALSE}
+df <- transform(airquality, MonthAbb = month.abb[Month])
+df$month <- do.call(paste,c(df[c("Month","MonthAbb")],sep="-"))
+```
+
+## Plot
+
+```{r, echo=FALSE,fig.align='center',fig.cap='New York Air Quality Measurements', message=FALSE, warning=FALSE}
+plot_ly(df, x=~Ozone, y=~Temp,type="scatter",
+        color=~factor(month), size=~Wind)
+```
+
+## Plot with Regression Line
+```{r, echo=FALSE,fig.align='center',fig.cap='New York Air Quality Measurements', message=FALSE, warning=FALSE}
+df1 <- df %>% filter(!is.na(Ozone))
+fit <- lm(Temp ~ Ozone, data=df1)
+p <- plot_ly(df1, x=~Ozone, color=I("blue")) %>%
+     add_markers(y=~Temp, showlegend = FALSE) %>%  
+        #color=~factor(month),size=~Wind) %>%
+     add_lines(x=~Ozone, y=fitted(fit),
+        line = list(color="#07A4B5"),
+        name = "Regression Line", showlegend = TRUE)
+p
+```
+ 
+
+## Plot Solar radiation and Temperature
+```{r, echo=FALSE,fig.align='center',fig.cap='New York Air Quality Measurements', message=FALSE, warning=FALSE}
+plot_ly(df, x=~Solar.R, y=~Temp,type="scatter",
+        color=~factor(month), size=~Wind)
+```
+***
+<div class="centered">
+### **The End** 
+</div>
+
+
